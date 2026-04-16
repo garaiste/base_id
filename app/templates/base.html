@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Base ID{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full">
+<div class="min-h-full flex flex-col">
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 font-semibold text-gray-900">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        Base ID
+      </a>
+      <div class="flex items-center gap-4 text-sm">
+        {% if user %}
+          <span class="text-gray-500">{{ user.email }}</span>
+          {% if user.status == 'admin' or user.status.value == 'admin' %}
+            <a href="/admin/users" class="text-gray-600 hover:text-gray-900">Admin</a>
+          {% endif %}
+          <a href="/auth/logout" class="text-gray-600 hover:text-gray-900">Sign out</a>
+        {% else %}
+          <a href="/auth/login" class="text-gray-600 hover:text-gray-900">Sign in</a>
+          <a href="/auth/register" class="bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 font-medium">Sign up</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+  <main class="flex-1">{% block content %}{% endblock %}</main>
+</div>
+</body>
+</html>

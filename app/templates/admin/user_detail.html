@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ user.email }} — Admin — Base ID{% endblock %}
+{% set user_nav = admin %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+  <div class="mb-6"><a href="/admin/users" class="text-sm text-gray-500 hover:text-gray-700">← All users</a></div>
+  {% set sv = user.status.value %}
+  {% set colors = {'admin':'bg-purple-100 text-purple-700','approved':'bg-green-100 text-green-700','pending':'bg-amber-100 text-amber-700','suspended':'bg-red-100 text-red-700'} %}
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900">{{ user.email }}</h1>
+      {% if user.display_name %}<p class="text-gray-500 text-sm mt-0.5">{{ user.display_name }}</p>{% endif %}
+    </div>
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium {{ colors.get(sv, 'bg-gray-100 text-gray-700') }}">{{ sv | capitalize }}</span>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
+    <div class="px-6 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-900">Details</h2></div>
+    <dl class="divide-y divide-gray-100 text-sm">
+      <div class="px-6 py-3 flex justify-between"><dt class="text-gray-500">User ID</dt><dd class="font-mono text-xs text-gray-900">{{ user.id }}</dd></div>
+      <div class="px-6 py-3 flex justify-between"><dt class="text-gray-500">Email verified</dt><dd class="{% if user.email_verified %}text-green-600{% else %}text-amber-600{% endif %}">{{ 'Yes' if user.email_verified else 'No' }}</dd></div>
+      <div class="px-6 py-3 flex justify-between"><dt class="text-gray-500">Joined</dt><dd class="text-gray-900">{{ user.created_at.strftime('%B %d, %Y at %H:%M UTC') }}</dd></div>
+    </dl>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
+    <div class="px-6 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-900">Change status</h2></div>
+    <div class="px-6 py-4">
+      <form method="post" action="/admin/users/{{ user.id }}/status" class="flex gap-3">
+        <select name="new_status" class="text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          {% for s in statuses %}<option value="{{ s }}" {% if sv == s %}selected{% endif %}>{{ s | capitalize }}</option>{% endfor %}
+        </select>
+        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">Update</button>
+      </form>
+      {% if sv == 'pending' %}<p class="text-xs text-gray-400 mt-2">Setting to <strong>Approved</strong> will send the user a notification email.</p>{% endif %}
+    </div>
+  </div>
+  {% if user.app_approvals %}
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div class="px-6 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-900">App approvals</h2></div>
+    <ul class="divide-y divide-gray-100">
+      {% for appr in user.app_approvals %}
+      {% set av = appr.status.value %}
+      {% set ac = {'approved':'bg-green-100 text-green-700','pending':'bg-amber-100 text-amber-700','rejected':'bg-red-100 text-red-700'} %}
+      <li class="px-6 py-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-medium text-gray-900 text-sm">{{ appr.app_id }}</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ ac.get(av, 'bg-gray-100 text-gray-700') }}">{{ av | capitalize }}</span>
+        </div>
+        <form method="post" action="/admin/approvals/{{ user.id }}/{{ appr.app_id }}" class="flex gap-2">
+          <button type="submit" name="decision" value="approved" class="text-xs bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700">Approve</button>
+          <button type="submit" name="decision" value="rejected" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700">Reject</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

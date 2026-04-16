@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Email verified — Base ID{% endblock %}
+{% block content %}
+<div class="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-4 py-12">
+  <div class="max-w-md w-full text-center">
+    {% if success %}
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-6">
+      <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900 mb-3">Email verified!</h1>
+    <p class="text-gray-500 mb-8">Your email is confirmed. Your account is pending admin approval — you'll receive an email once approved.</p>
+    <a href="/auth/login" class="inline-block bg-blue-600 text-white px-6 py-2.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Go to sign in</a>
+    {% else %}
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
+      <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9.303 3.376c-.866 1.5.217 3.374 1.948 3.374H4.75c-1.73 0-2.813-1.874-1.948-3.374L10.051 3.378c.866-1.5 3.032-1.5 3.898 0L22.303 16.126zM12 15.75h.007v.008H12v-.008z"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900 mb-3">Verification failed</h1>
+    <p class="text-gray-500 mb-8">{{ error }}</p>
+    <a href="/auth/register" class="text-blue-600 text-sm hover:text-blue-700 font-medium">Back to sign up →</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

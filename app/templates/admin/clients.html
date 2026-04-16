@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}OAuth Clients — Admin — Base ID{% endblock %}
+{% set user = admin %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900">OAuth Clients</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Register apps that can authenticate via Base ID</p>
+    </div>
+    <a href="/admin/users" class="text-sm text-gray-500 hover:text-gray-700">← Users</a>
+  </div>
+  {% if clients %}
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-8 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 font-semibold text-gray-900">Registered clients</div>
+    <ul class="divide-y divide-gray-100">
+      {% for c in clients %}
+      <li class="px-6 py-4">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="font-medium text-gray-900">{{ c.name }}</p>
+            <p class="text-xs text-gray-400 font-mono mt-0.5">{{ c.client_id }}</p>
+            <p class="text-xs text-gray-500 mt-1">Redirect URIs: {% for uri in c.redirect_uris %}<code class="bg-gray-100 px-1 rounded text-xs">{{ uri }}</code>{% if not loop.last %}, {% endif %}{% endfor %}</p>
+            <p class="text-xs text-gray-500 mt-0.5">Scopes: {{ c.scopes | join(', ') }}</p>
+          </div>
+          <form method="post" action="/admin/clients/{{ c.client_id }}/delete" onsubmit="return confirm('Delete {{ c.name }}?')">
+            <button type="submit" class="text-xs text-red-600 hover:text-red-700 font-medium">Delete</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div class="px-6 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-900">Register new client</h2></div>
+    <form method="post" action="/admin/clients" class="px-6 py-5 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Client ID</label>
+          <input name="client_id" type="text" required placeholder="e.g. base" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Display name</label>
+          <input name="name" type="text" required placeholder="e.g. Base App" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Client secret</label>
+        <input name="client_secret" type="text" required placeholder="Choose a strong random secret" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"/>
+        <p class="text-xs text-gray-400 mt-1">Hashed before storage — save it now.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Redirect URIs <span class="text-gray-400 font-normal">(one per line)</span></label>
+        <textarea name="redirect_uris" rows="3" required placeholder="http://localhost:8000/auth/callback" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Scopes <span class="text-gray-400 font-normal">(space-separated)</span></label>
+        <input name="scopes" type="text" value="openid profile email" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      </div>
+      <div class="pt-2">
+        <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Register client</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Users — Admin — Base ID{% endblock %}
+{% set user = admin %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-bold text-gray-900">Users</h1>
+    <a href="/admin/clients" class="text-sm border border-gray-300 px-3 py-1.5 rounded-md hover:bg-gray-50 text-gray-700">OAuth clients</a>
+  </div>
+  <form method="get" class="mb-4 flex gap-2">
+    <select name="status_filter" class="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <option value="">All statuses</option>
+      {% for s in statuses %}<option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s | capitalize }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="text-sm bg-gray-900 text-white px-3 py-1.5 rounded-md hover:bg-gray-700">Filter</button>
+    {% if status_filter %}<a href="/admin/users" class="text-sm text-gray-500 hover:text-gray-700 py-1.5">Clear</a>{% endif %}
+  </form>
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-5 py-3 text-left font-medium text-gray-500">Email</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-500">Name</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-500">Status</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-500">Verified</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-500">Joined</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for u in users %}
+        {% set sv = u.status.value %}
+        {% set colors = {'admin':'bg-purple-100 text-purple-700','approved':'bg-green-100 text-green-700','pending':'bg-amber-100 text-amber-700','suspended':'bg-red-100 text-red-700'} %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-5 py-3 font-medium text-gray-900">{{ u.email }}</td>
+          <td class="px-5 py-3 text-gray-500">{{ u.display_name or '—' }}</td>
+          <td class="px-5 py-3"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ colors.get(sv, 'bg-gray-100 text-gray-700') }}">{{ sv | capitalize }}</span></td>
+          <td class="px-5 py-3 text-gray-500">{% if u.email_verified %}<span class="text-green-600">✓</span>{% else %}—{% endif %}</td>
+          <td class="px-5 py-3 text-gray-400">{{ u.created_at.strftime('%b %d, %Y') }}</td>
+          <td class="px-5 py-3"><a href="/admin/users/{{ u.id }}" class="text-blue-600 hover:text-blue-700 font-medium text-xs">View →</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="px-5 py-8 text-center text-gray-400">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
