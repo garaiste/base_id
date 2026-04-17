@@ -8,6 +8,7 @@ from fastapi.templating import Jinja2Templates
 from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from ..auth.email import send_approval_email
 from ..database import get_db
 from ..deps import get_admin_user
@@ -34,7 +35,9 @@ async def users_list(request: Request, db: Annotated[AsyncSession, Depends(get_d
 @router.get("/users/{user_id}", response_class=HTMLResponse)
 async def user_detail(request: Request, user_id: str, db: Annotated[AsyncSession, Depends(get_db)],
                       admin: Annotated[User, Depends(get_admin_user)]):
-    result = await db.execute(select(User).where(User.id == user_id))
+    result = await db.execute(
+        select(User).options(selectinload(User.app_approvals)).where(User.id == user_id)
+    )
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
