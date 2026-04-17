@@ -1,8 +1,8 @@
 from __future__ import annotations
 import enum, uuid
 from datetime import datetime, timezone
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import ARRAY, UUID
+from sqlalchemy import JSON, Boolean, DateTime, Enum, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .database import Base
 
@@ -49,8 +49,8 @@ class OAuthClient(Base):
     client_id: Mapped[str] = mapped_column(String, primary_key=True)
     client_secret: Mapped[str] = mapped_column(String, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    redirect_uris: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
-    scopes: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
+    redirect_uris: Mapped[list[str]] = mapped_column(JSON, default=list)
+    scopes: Mapped[list[str]] = mapped_column(JSON, default=list)
 
 
 class RefreshToken(Base):
