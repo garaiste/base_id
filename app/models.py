@@ -58,7 +58,7 @@ class RefreshToken(Base):
     token_hash: Mapped[str] = mapped_column(String, primary_key=True)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
     client_id: Mapped[str | None] = mapped_column(String)
-    issued_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)
     user: Mapped[User] = relationship("User", back_populates="refresh_tokens")
